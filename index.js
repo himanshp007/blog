@@ -11,7 +11,7 @@ function handleFormSubmit(event){
   
 
   axios
-    .post('https://crudcrud.com/api/8dbfb90762ec4a6baa770c98a8037b1a/blog', blogDetails)
+    .post('https://crudcrud.com/api/108276dc66944da7b580751da942c053/blog', blogDetails)
     .then((response) => displayBlog())
     .catch((err) => console.log(err));
 
@@ -25,12 +25,13 @@ function handleFormSubmit(event){
 function displayBlog(){
 
   axios
-    .get('https://crudcrud.com/api/8dbfb90762ec4a6baa770c98a8037b1a/blog')
+    .get('https://crudcrud.com/api/108276dc66944da7b580751da942c053/blog')
     .then((response) => {
 
       const totalBlog = document.getElementById('blogcount');
       const allItems = document.querySelector('ul');
-      totalBlog.innerHTML = `Total Blog: ${response.data.length}`
+      var totalBlogPosts = response.data.length;
+      totalBlog.innerHTML = `Total Blog: ${totalBlogPosts}`
 
       allItems.innerHTML = '';
 
@@ -38,6 +39,7 @@ function displayBlog(){
 
       reversedData.forEach((item) => {
         const blogItem = document.createElement('li');
+        blogItem.style.listStyleType = 'none'; 
 
         const editBtn = document.createElement("button");
         editBtn.textContent = 'Edit';
@@ -63,15 +65,24 @@ function displayBlog(){
           document.getElementById('imgurl').value = item.img;
           document.getElementById('blogtitle').value = item.title;
           document.getElementById('blogdis').value = item.discription;
+          
+          axios
+            .delete(`https://crudcrud.com/api/108276dc66944da7b580751da942c053/blog/${item._id}`)
+            .then((res) => {
+              blogItem.remove();
+            })
+            .catch((err) => console.log(err))
+          
         });
 
 
         deleteBtn.addEventListener('click', function(){
           axios
-            .delete(`https://crudcrud.com/api/8dbfb90762ec4a6baa770c98a8037b1a/blog/${item._id}`)
+            .delete(`https://crudcrud.com/api/108276dc66944da7b580751da942c053/blog/${item._id}`)
             .then((res) => {
               blogItem.remove();
-              totalBlog.innerHTML = `Total Blog: ${response.data.length - 1}`;
+              totalBlogPosts = totalBlogPosts - 1;
+              totalBlog.innerHTML = `Total Blog: ${totalBlogPosts}`;
             })
             .catch((err) => console.log(err))
         })
